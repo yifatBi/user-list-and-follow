@@ -8,8 +8,11 @@
 * compiled file, but it's generally better to create a new file per style scope.
 *
 *= require bootstrap.min
-*= require grails
-*= require main
-*= require mobile
 *= require_self
 */
+.follow{
+    background: orange;
+}
+.following{
+    background: green;
+}

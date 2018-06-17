@@ -6,15 +6,16 @@
 // to create separate JavaScript files as needed.
 //
 //= require jquery-2.2.0.min
-//= require bootstrap
 //= require_self
+    //set for random user cookie
    function setCookie(cname, cvalue, exdays) {
         var d = new Date();
         d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
         var expires = "expires=" + d.toUTCString();
         document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
     }
-    setCookie('user-id', Math.floor((Math.random() * 10) + 1), 3)
+    setCookie('user-id', Math.floor((Math.random() * 10) + 1), 3);
+    //get cookie function for validation
     function getCookie(name) {
         var re = new RegExp(name + "=([^;]+)");
         var value = re.exec(document.cookie);
@@ -31,27 +32,44 @@ if (typeof jQuery !== 'undefined') {
         }).on('mouseout', '.following', function() {
             $(this).text("following")
         });
+        //call get data function to load cookie user data and update value according the user
+        $.get('/home/getUserData',function(data){
+           $('#userName').text(data.userName);
+            $('#isFollow'+data.userId).prop('disabled',true);
+           $("#row"+data.userId).addClass('table-success').prop('title', 'This is your user');;
+           //update the following users
+            data.following.forEach(function(val){
+                $('#isFollow'+val).removeClass('follow').addClass('following').text('following');
+            });
+            $("#no-cookie").addClass('d-none');
+            $("#content").removeClass('d-none');
+        }).fail(function(err) {
+            alert(err.responseText);
+        });
+        //after page is loaded add page handlers
         $(document).ready(function(){
             $('.follow,.following').click(function () {
-                console.log('action');
                 var self=$(this);
-                $.ajax({url:'/user/followUser',
+                var followersNum =$('#followersNum'+self.data('id'));
+                $.ajax({url:'/home/followUser',
                     type: 'POST',
-                    data:{userId:$(this).data('id'),follow: 1},
+                    data:{userId:$(this).data('id'),followersNum: followersNum.text()},
+                    //while ajax performing disable another ajax call
                     beforeSend:function(){
-                    self.prop('disabled', true);
+                        self.prop('disabled', true);
                     },
-                success: function(resp){
-                    var action=resp.action;
-                    var followers=resp.followerNum
-                    self.text(action).removeClass('following follow').addClass(action);
-                    $('#followersNum'+self.data('id')).text(followers);
-                },
-                error:function(error){
-                    alert("there was an issue")
-                 },
+                    success: function(data){
+                        //update text and functionality according result data
+                        var action=data.action;
+                        var followers=data.followerNum;
+                        self.text(action).removeClass('following follow').addClass(action);
+                        followersNum.text(followers);
+                    },
+                    error:function(error){
+                        alert("there was an issue"+error)
+                     },
                     complete:function(){
-                    self.prop('disabled', false)
+                         self.prop('disabled', false)
                     }
                 })
 

@@ -1,10 +1,8 @@
 package gails
-@SuppressWarnings('GrailsDomainReservedSqlKeywordName')
-class User {
+class User implements Comparable{
     Integer id
     String name
     UserGroup group
-//    static belongsTo = [ group: Group]
 
     static constraints = {
     }
@@ -14,7 +12,9 @@ class User {
     Integer myFollowers(){
         return Follow.countByUser(this)
     }
-    boolean isFollowedBy(def user){
-        return Follow.findByFollowerAndUser(User.get(user),this)
+
+    @Override
+    int compareTo(Object obj) {
+        return name<=>obj.name?:group<=>obj.group?:obj.myFollowers()<=>myFollowers()
     }
 }

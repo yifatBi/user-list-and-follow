@@ -4,7 +4,7 @@ import grails.testing.gorm.DomainUnitTest
 import grails.testing.web.controllers.ControllerUnitTest
 import spock.lang.*
 
-class UserControllerSpec extends Specification implements ControllerUnitTest<UserController>, DomainUnitTest<User> {
+class HomeControllerSpec extends Specification implements ControllerUnitTest<HomeController>, DomainUnitTest<User> {
 
     def populateValidParams(params) {
         assert params != null

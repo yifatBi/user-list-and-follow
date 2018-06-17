@@ -1,6 +1,6 @@
 package gails
-@SuppressWarnings('GrailsDomainReservedSqlKeywordName')
 class Follow {
+    Integer id
     User user
     User follower
     static constraints = {
